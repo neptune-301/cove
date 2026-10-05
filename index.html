@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="description" content="COVE: THE ISOLATED — 이능력 감염자 격리 도시 세계관 아카이브 및 캐릭터 로스터" />
+  <title>COVE: THE ISOLATED</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #05070b;
+      --bg-soft: #090d13;
+      --panel: rgba(10, 15, 23, .82);
+      --panel-strong: rgba(7, 11, 17, .94);
+      --line: rgba(137, 180, 248, .19);
+      --line-strong: rgba(137, 180, 248, .5);
+      --cyan: #8ab4f8;
+      --cyan-hi: #bcd8ff;
+      --purple: #b388ff;
+      --text: #edf4ff;
+      --muted: #9aa8bb;
+      --dim: #617086;
+      --danger: #ff6f91;
+      --ok: #7ef0c5;
+      --shadow: 0 0 42px rgba(89, 142, 222, .08);
+      --radius: 3px;
+      --max: 1240px;
+      --nav-h: 70px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 75% -5%, rgba(89, 142, 222, .12), transparent 28rem),
+        radial-gradient(circle at 8% 38%, rgba(179, 136, 255, .055), transparent 26rem),
+        var(--bg);
+      color: var(--text);
+      font-family: "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.72;
+      overflow-x: hidden;
+      word-break: keep-all;
+    }
+
+    ::selection { color: #03070b; background: var(--cyan); }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { font: inherit; }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      pointer-events: none;
+      opacity: .13;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 3px,
+          rgba(255,255,255,.025) 4px
+        );
+      mix-blend-mode: screen;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 9996;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(138, 180, 248, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138, 180, 248, .018) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+    }
+
+    #rain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      opacity: .2;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    .boot {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: grid;
+      place-items: center;
+      background: #030507;
+      transition: opacity .65s ease, visibility .65s ease;
+    }
+
+    .boot.done { opacity: 0; visibility: hidden; }
+    .boot-box { width: min(470px, calc(100% - 48px)); }
+    .boot-brand {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.25rem, 5vw, 2.05rem);
+      letter-spacing: .18em;
+      margin-bottom: 14px;
+    }
+    .boot-line {
+      height: 1px;
+      background: #152032;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    .boot-line i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--cyan);
+      box-shadow: 0 0 18px var(--cyan);
+      animation: bootload 1.35s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    .boot-copy {
+      font: .68rem/1.8 "Space Mono", monospace;
+      color: var(--dim);
+      letter-spacing: .08em;
+    }
+    @keyframes bootload { to { width: 100%; } }
+
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: var(--nav-h);
+      border-bottom: 1px solid rgba(138, 180, 248, .14);
+      background: rgba(5, 7, 11, .72);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      width: min(var(--max), calc(100% - 40px));
+      height: 100%;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font: 700 .86rem "Orbitron", sans-serif;
+      letter-spacing: .16em;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      border: 1px solid var(--line-strong);
+      rotate: 45deg;
+    }
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid var(--cyan);
+    }
+    .brand-mark::after {
+      inset: 11px;
+      background: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-links a {
+      padding: 9px 11px;
+      text-decoration: none;
+      color: var(--dim);
+      font: 700 .62rem "Space Mono", monospace;
+      letter-spacing: .08em;
+      transition: color .25s ease, background .25s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--cyan-hi);
+      background: rgba(138, 180, 248, .055);
+    }
+    .nav-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font: .61rem "Space Mono", monospace;
+      letter-spacing: .08em;
+    }
+    .nav-status i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 10px var(--ok);
+      animation: pulse 1.9s ease-in-out infinite;
+    }
+    @keyframes pulse { 50% { opacity: .32; } }
+
+    main { position: relative; z-index: 5; }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(5,7,11,.14), rgba(5,7,11,.58) 52%, #05070b 96%),
+        linear-gradient(90deg, rgba(5,7,11,.74), rgba(5,7,11,.06) 58%, rgba(5,7,11,.42)),
+        url("https://i.imgur.com/8vEGsHR.png") center/cover no-repeat;
+      transform: scale(1.06);
+      animation: heroDrift 20s ease-in-out infinite alternate;
+    }
+    @keyframes heroDrift {
+      from { transform: scale(1.06) translate3d(0,0,0); }
+      to { transform: scale(1.12) translate3d(-1.1%, -.7%, 0); }
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(138,180,248,.045) 1px, transparent 1px),
+        linear-gradient(rgba(138,180,248,.035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.2), #000 60%);
+    }
+
+    .hero-shell {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 88px) 0 72px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.15fr .58fr;
+      gap: 58px;
+      align-items: end;
+    }
+
+    .eyebrow, .section-kicker {
+      color: var(--cyan);
+      font: 700 .68rem "Space Mono", monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      position: relative;
+      width: fit-content;
+      margin: 18px 0 16px;
+      font: 800 clamp(3rem, 8.3vw, 7.7rem)/.82 "Orbitron", sans-serif;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+      text-shadow: 0 0 44px rgba(138,180,248,.17);
+    }
+    .hero h1 span { display: block; }
+    .hero h1 .isolation {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(210,227,255,.68);
+      font-size: .45em;
+      line-height: 1.25;
+      letter-spacing: .36em;
+      margin-left: .08em;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0 auto auto 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .glitch::before { color: var(--cyan); transform: translateX(2px); }
+    .glitch::after { color: var(--purple); transform: translateX(-2px); }
+    .glitch:hover::before { opacity: .22; animation: glitchA .5s steps(2,end) infinite; }
+    .glitch:hover::after { opacity: .16; animation: glitchB .4s steps(2,end) infinite; }
+    @keyframes glitchA {
+      0% { clip-path: inset(10% 0 72% 0); }
+      50% { clip-path: inset(62% 0 15% 0); }
+      100% { clip-path: inset(30% 0 52% 0); }
+    }
+    @keyframes glitchB {
+      0% { clip-path: inset(70% 0 5% 0); }
+      50% { clip-path: inset(22% 0 60% 0); }
+      100% { clip-path: inset(48% 0 28% 0); }
+    }
+
+    .hero-summary {
+      max-width: 720px;
+      margin: 0;
+      color: #c2cfdf;
+      font-size: clamp(.93rem, 1.55vw, 1.06rem);
+    }
+
+    .hero-quote {
+      margin-top: 28px;
+      padding: 14px 0 14px 18px;
+      border-left: 1px solid var(--cyan);
+      color: white;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+    .hero-quote strong { color: var(--cyan-hi); }
+
+    .hero-panel {
+      background: linear-gradient(145deg, rgba(12,19,29,.78), rgba(5,8,13,.9));
+      border: 1px solid rgba(138,180,248,.24);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .hero-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+      font: 700 .58rem "Space Mono", monospace;
+      letter-spacing: .1em;
+      color: var(--dim);
+    }
+    .hero-panel-head span:last-child { color: var(--danger); }
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .metric {
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .metric:nth-child(2n) { border-right: 0; }
+    .metric:nth-last-child(-n + 2) { border-bottom: 0; }
+    .metric em {
+      display: block;
+      color: var(--dim);
+      font: normal .58rem "Space Mono", monospace;
+      letter-spacing: .08em;
+      margin-bottom: 7px;
+    }
+    .metric b {
+      color: var(--text);
+      font: 600 1rem "Orbitron", sans-serif;
+    }
+    .metric b.accent { color: var(--cyan); }
+
+    .ticker {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(138,180,248,.14);
+      background: rgba(5,7,11,.72);
+      white-space: nowrap;
+    }
+    .ticker-track {
+      display: inline-block;
+      min-width: max-content;
+      padding: 8px 0;
+      color: var(--dim);
+      font: 700 .56rem "Space Mono", monospace;
+      letter-spacing: .13em;
+      animation: ticker 28s linear infinite;
+    }
+    .ticker-track span { color: var(--cyan); margin: 0 18px; }
+    @keyframes ticker { to { transform: translateX(-50%); } }
+
+    .section {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 110px 0;
+      position: relative;
+    }
+    .section + .section { border-top: 1px solid rgba(138,180,248,.08); }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: .55fr 1.45fr;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 46px;
+    }
+    .section-index {
+      color: rgba(138,180,248,.24);
+      font: 700 clamp(2.8rem, 7vw, 5.5rem)/1 "Orbitron", sans-serif;
+      letter-spacing: -.06em;
+    }
+    .section-title {
+      margin: 7px 0 13px;
+      font: 600 clamp(1.85rem, 4vw, 3.2rem)/1.15 "Orbitron", sans-serif;
+      letter-spacing: -.035em;
+    }
+    .section-desc {
+      max-width: 780px;
+      color: var(--muted);
+      margin: 0;
+      font-size: .95rem;
+    }
+
+    .grid { display: grid; gap: 16px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .data-card {
+      position: relative;
+      min-height: 100%;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(11,16,24,.76), rgba(7,10,16,.9));
+      border: 1px solid rgba(138,180,248,.15);
+      box-shadow: inset 0 1px rgba(255,255,255,.018);
+      overflow: hidden;
+    }
+    .data-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 38px;
+      height: 1px;
+      background: var(--cyan);
+      box-shadow: 0 0 11px rgba(138,180,248,.52);
+      transition: width .35s ease;
+    }
+    .data-card:hover::before { width: 100%; }
+    .data-card .code {
+      color: var(--cyan);
+      font: 700 .57rem "Space Mono", monospace;
+      letter-spacing: .12em;
+    }
+    .data-card h3 {
+      margin: 13px 0 10px;
+      font-size: 1rem;
+      letter-spacing: -.025em;
+    }
+    .data-card p {
+      margin: 0;
+      color: #aab6c6;
+      font-size: .86rem;
+    }
+    .data-card strong { color: var(--cyan-hi); font-weight: 600; }
+
+    .system-strip {
+      margin-top: 16px;
+      border: 1px solid rgba(138,180,248,.17);
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 1fr 1fr;
+      background: rgba(5,8,13,.52);
+    }
+    .sys {
+      padding: 24px 20px;
+      border-right: 1px solid rgba(138,180,248,.13);
+    }
+    .sys:last-child { border-right: 0; }
+    .sys .num {
+      font: 700 1.55rem "Orbitron", sans-serif;
+      color: var(--cyan);
+    }
+    .sys h3 { margin: 10px 0 8px; font-size: .9rem; }
+    .sys p { margin: 0; color: var(--muted); font-size: .8rem; }
+
+    .district-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+    .city-map {
+      position: relative;
+      min-height: 540px;
+      overflow: hidden;
+      border: 1px solid rgba(138,180,248,.2);
+      background:
+        radial-gradient(circle at center, rgba(138,180,248,.08), transparent 55%),
+        linear-gradient(rgba(138,180,248,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138,180,248,.055) 1px, transparent 1px),
+        #070a10;
+      background-size: auto, 40px 40px, 40px 40px, auto;
+    }
+    .city-map::before {
+      content: "COVE // SECTOR SCAN";
+      position: absolute;
+      top: 15px;
+      left: 17px;
+      color: var(--dim);
+      font: 700 .58rem "Space Mono", monospace;
+      letter-spacing: .12em;
+    }
+    .city-map::after {
+      content: "";
+      position: absolute;
+      inset: 10%;
+      border: 1px dashed rgba(138,180,248,.18);
+      border-radius: 48% 52% 60% 40% / 42% 35% 65% 58%;
+      transform: rotate(-7deg);
+      box-shadow: inset 0 0 80px rgba(138,180,248,.03);
+    }
+    .node {
+      --x: 50%;
+      --y: 50%;
+      position: absolute;
+      z-index: 2;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      color: var(--text);
+      border: 1px solid rgba(138,180,248,.36);
+      background: rgba(7,12,19,.88);
+      clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+      font: 700 .62rem "Orbitron", sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .node::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(138,180,248,.17);
+      clip-path: inherit;
+    }
+    .node::after {
+      content: "";
+      position: absolute;
+      inset: -18px;
+      border: 1px solid rgba(138,180,248,.11);
+      border-radius: 50%;
+      animation: nodePulse 2.5s ease-out infinite;
+    }
+    @keyframes nodePulse {
+      0% { scale: .65; opacity: 0; }
+      35% { opacity: .7; }
+      100% { scale: 1.2; opacity: 0; }
+    }
+
+    .district-list { display: grid; gap: 10px; }
+    .district-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 18px;
+      padding: 18px 20px;
+      border: 1px solid rgba(138,180,248,.12);
+      background: rgba(10,14,21,.62);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+    .district-item:hover {
+      transform: translateX(5px);
+      border-color: rgba(138,180,248,.38);
+      background: rgba(14,20,30,.8);
+    }
+    .district-item b {
+      align-self: start;
+      color: var(--cyan-hi);
+      font: 600 .78rem "Orbitron", sans-serif;
+    }
+    .district-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .org-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .org-card {
+      position: relative;
+      min-height: 365px;
+      border: 1px solid rgba(138,180,248,.14);
+      overflow: hidden;
+      background: #080b10;
+      isolation: isolate;
+    }
+    .org-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(.48) brightness(.42) saturate(.75);
+      transition: transform .7s cubic-bezier(.2,.65,.2,1), filter .45s ease;
+    }
+    .org-card:hover .org-image { transform: scale(1.055); filter: grayscale(.18) brightness(.48) saturate(.92); }
+    .org-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4,7,11,.98) 4%, rgba(5,8,13,.78) 46%, rgba(5,8,13,.18));
+      z-index: 1;
+    }
+    .org-content {
+      position: absolute;
+      inset: auto 0 0;
+      z-index: 2;
+      padding: 24px;
+    }
+    .org-no {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 2;
+      color: rgba(255,255,255,.18);
+      font: 700 1.7rem "Orbitron", sans-serif;
+    }
+    .org-type {
+      display: block;
+      color: var(--cyan);
+      font: 700 .56rem "Space Mono", monospace;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+    }
+    .org-content h3 {
+      margin: 0 0 11px;
+      font: 600 1.05rem "Orbitron", sans-serif;
+    }
+    .org-content p { color: #aab6c6; font-size: .82rem; margin: 0; }
+    .org-rank {
+      display: block;
+      margin-top: 13px;
+      color: #718096;
+      font: 700 .56rem/1.6 "Space Mono", monospace;
+      letter-spacing: .04em;
+    }
+    .org-card.rain-card {
+      background:
+        radial-gradient(circle at 50% 37%, rgba(138,180,248,.1), transparent 22%),
+        #080b10;
+    }
+    .rain-r {
+      position: absolute;
+      inset: 0 0 95px;
+      display: grid;
+      place-items: center;
+      color: rgba(138,180,248,.18);
+      font: 800 8rem "Orbitron", sans-serif;
+      text-shadow: 0 0 40px rgba(138,180,248,.14);
+      z-index: 0;
+    }
+
+
+    /* ─────────────────────────────────────────────
+       ROSTER // POP-UP DOSSIER SYSTEM
+    ───────────────────────────────────────────── */
+    .roster {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 360px));
+      justify-content: center;
+      gap: 22px;
+    }
+
+    .roster-card {
+      --agent: var(--cyan);
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4.15;
+      padding: 0;
+      border: 1px solid color-mix(in srgb, var(--agent) 30%, transparent);
+      background: #080b10;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+      isolation: isolate;
+      box-shadow: 0 22px 60px rgba(0,0,0,.28);
+      transition:
+        transform .42s cubic-bezier(.2,.7,.2,1),
+        border-color .35s ease,
+        box-shadow .35s ease;
+    }
+
+    .roster-card.haze { --agent: var(--purple); }
+
+    .roster-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: .16;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 3px,
+          rgba(255,255,255,.07) 4px
+        );
+      mix-blend-mode: screen;
+    }
+
+    .roster-card::after {
+      content: "";
+      position: absolute;
+      z-index: 4;
+      left: -35%;
+      top: -20%;
+      width: 38%;
+      height: 145%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--agent) 16%, transparent),
+        transparent
+      );
+      transform: rotate(11deg);
+      opacity: 0;
+      transition: left .7s ease, opacity .25s ease;
+      pointer-events: none;
+    }
+
+    .roster-card:hover,
+    .roster-card:focus-visible {
+      transform: translateY(-7px);
+      border-color: color-mix(in srgb, var(--agent) 67%, transparent);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.36),
+        0 0 32px color-mix(in srgb, var(--agent) 11%, transparent);
+      outline: none;
+    }
+
+    .roster-card:hover::after,
+    .roster-card:focus-visible::after {
+      left: 115%;
+      opacity: 1;
+    }
+
+    .roster-card-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.78) contrast(1.04) brightness(.76);
+      transition: transform .8s cubic-bezier(.2,.65,.2,1), filter .45s ease;
+    }
+
+    .roster-card:hover .roster-card-image,
+    .roster-card:focus-visible .roster-card-image {
+      transform: scale(1.045);
+      filter: saturate(.96) contrast(1.07) brightness(.83);
+    }
+
+    .roster-card-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom, rgba(5,8,13,.08) 0%, rgba(5,8,13,.16) 42%, rgba(5,8,13,.95) 100%),
+        linear-gradient(90deg, rgba(5,8,13,.28), transparent 48%, rgba(5,8,13,.12));
+    }
+
+    .roster-card-top {
+      position: absolute;
+      z-index: 5;
+      inset: 16px 16px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: color-mix(in srgb, var(--agent) 90%, white 10%);
+      font: 700 .54rem "Space Mono", monospace;
+      letter-spacing: .09em;
+    }
+
+    .roster-card-risk {
+      padding: 5px 7px;
+      border: 1px solid color-mix(in srgb, var(--agent) 42%, transparent);
+      background: rgba(5,8,13,.55);
+      backdrop-filter: blur(8px);
+    }
+
+    .roster-card-bottom {
+      position: absolute;
+      z-index: 5;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 22px;
+    }
+
+    .roster-card-number {
+      color: var(--agent);
+      font: 700 .55rem "Space Mono", monospace;
+      letter-spacing: .13em;
+    }
+
+    .roster-card-name {
+      display: block;
+      margin: 5px 0 6px;
+      color: #fff;
+      font: 700 clamp(2rem, 5vw, 3.45rem)/.94 "Orbitron", sans-serif;
+      letter-spacing: -.055em;
+      text-shadow: 0 3px 24px rgba(0,0,0,.45);
+    }
+
+    .roster-card-meta {
+      color: #b8c2d0;
+      font-size: .74rem;
+      line-height: 1.55;
+    }
+
+    .roster-card-open {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid color-mix(in srgb, var(--agent) 22%, transparent);
+      color: color-mix(in srgb, var(--agent) 90%, white 10%);
+      font: 700 .57rem "Space Mono", monospace;
+      letter-spacing: .12em;
+      transition: letter-spacing .3s ease;
+    }
+
+    .roster-card:hover .roster-card-open,
+    .roster-card:focus-visible .roster-card-open {
+      letter-spacing: .18em;
+    }
+
+    .roster-card-open i {
+      font-style: normal;
+      font-size: .9rem;
+      transition: transform .3s ease;
+    }
+
+    .roster-card:hover .roster-card-open i,
+    .roster-card:focus-visible .roster-card-open i {
+      transform: translateX(4px);
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .dossier-modal {
+      --agent: var(--cyan);
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .28s ease, visibility .28s ease;
+    }
+
+    .dossier-modal.haze { --agent: var(--purple); }
+
+    .dossier-modal.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .dossier-backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      cursor: default;
+      background:
+        radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--agent) 8%, transparent), transparent 38rem),
+        rgba(1,3,6,.82);
+      backdrop-filter: blur(13px);
+    }
+
+    .dossier-panel {
+      position: relative;
+      z-index: 1;
+      width: min(1040px, 100%);
+      max-height: min(850px, calc(100svh - 56px));
+      overflow: auto;
+      overscroll-behavior: contain;
+      border: 1px solid color-mix(in srgb, var(--agent) 43%, transparent);
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--agent) 3%, transparent), rgba(7,10,16,.985)),
+        #070a10;
+      box-shadow:
+        0 35px 120px rgba(0,0,0,.62),
+        0 0 44px color-mix(in srgb, var(--agent) 9%, transparent);
+      opacity: 0;
+      transform: translateY(22px) scale(.975);
+      transition:
+        opacity .38s ease,
+        transform .48s cubic-bezier(.2,.78,.2,1);
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--agent) 50%, #182130) #080c12;
+    }
+
+    .dossier-modal.open .dossier-panel {
+      opacity: 1;
+      transform: none;
+    }
+
+    .dossier-panel::-webkit-scrollbar { width: 8px; }
+    .dossier-panel::-webkit-scrollbar-track { background: #080c12; }
+    .dossier-panel::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--agent) 45%, #1b2635);
+    }
+
+    .dossier-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      opacity: .12;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 3px,
+          rgba(255,255,255,.06) 4px
+        );
+      mix-blend-mode: screen;
+    }
+
+    .dossier-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 9px 10px 9px 16px;
+      border-bottom: 1px solid color-mix(in srgb, var(--agent) 25%, transparent);
+      background: rgba(6,9,14,.91);
+      backdrop-filter: blur(16px);
+    }
+
+    .dossier-bar-label {
+      color: var(--agent);
+      font: 700 .57rem "Space Mono", monospace;
+      letter-spacing: .12em;
+    }
+
+    .dossier-close {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid color-mix(in srgb, var(--agent) 28%, transparent);
+      background: rgba(255,255,255,.025);
+      color: #b9c4d2;
+      cursor: pointer;
+      font: 400 1.2rem/1 "Space Mono", monospace;
+      transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+
+    .dossier-close:hover,
+    .dossier-close:focus-visible {
+      color: #fff;
+      border-color: var(--agent);
+      background: color-mix(in srgb, var(--agent) 8%, transparent);
+      transform: rotate(90deg);
+      outline: none;
+    }
+
+    .dossier-layout {
+      display: grid;
+      grid-template-columns: minmax(310px, .72fr) 1.28fr;
+      min-height: 640px;
+    }
+
+    .dossier-photo {
+      position: relative;
+      min-height: 640px;
+      overflow: hidden;
+      background: #080b10;
+    }
+
+    .dossier-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.83) contrast(1.04);
+    }
+
+    .dossier-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(5,8,13,.82), transparent 35%),
+        linear-gradient(90deg, transparent 70%, rgba(5,8,13,.68));
+    }
+
+    .dossier-photo-stamp {
+      position: absolute;
+      z-index: 3;
+      left: 18px;
+      bottom: 18px;
+      max-width: calc(100% - 36px);
+      padding: 7px 9px;
+      color: color-mix(in srgb, var(--agent) 92%, white 8%);
+      border: 1px solid color-mix(in srgb, var(--agent) 44%, transparent);
+      background: rgba(5,8,13,.72);
+      backdrop-filter: blur(8px);
+      font: 700 .54rem/1.5 "Space Mono", monospace;
+      letter-spacing: .08em;
+    }
+
+    .dossier-body {
+      min-width: 0;
+      padding: 34px 34px 32px;
+    }
+
+    .dossier-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 18px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid color-mix(in srgb, var(--agent) 18%, transparent);
+    }
+
+    .dossier-code {
+      display: block;
+      color: var(--agent);
+      font: 700 .58rem "Space Mono", monospace;
+      letter-spacing: .13em;
+    }
+
+    .dossier-name {
+      margin: 5px 0 0;
+      font: 700 clamp(2.7rem, 7vw, 5.3rem)/.9 "Orbitron", sans-serif;
+      letter-spacing: -.055em;
+      color: #fff;
+    }
+
+    .dossier-risk {
+      flex: none;
+      padding: 8px 10px;
+      color: var(--agent);
+      border: 1px solid color-mix(in srgb, var(--agent) 42%, transparent);
+      font: 700 .55rem "Space Mono", monospace;
+      white-space: nowrap;
+    }
+
+    .dossier-quote {
+      margin: 20px 0 22px;
+      color: #eef5ff;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -.02em;
+    }
+
+    .dossier-facts {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      margin-bottom: 24px;
+      border-top: 1px solid rgba(255,255,255,.055);
+      border-left: 1px solid rgba(255,255,255,.055);
+    }
+
+    .dossier-fact {
+      min-width: 0;
+      padding: 11px 9px;
+      border-right: 1px solid rgba(255,255,255,.055);
+      border-bottom: 1px solid rgba(255,255,255,.055);
+    }
+
+    .dossier-fact span {
+      display: block;
+      color: #67758a;
+      font: .49rem "Space Mono", monospace;
+      margin-bottom: 4px;
+    }
+
+    .dossier-fact b {
+      display: block;
+      color: #cbd5e1;
+      font-size: .68rem;
+      line-height: 1.5;
+    }
+
+    .dossier-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .dossier-block {
+      padding-top: 13px;
+      border-top: 1px solid color-mix(in srgb, var(--agent) 19%, transparent);
+    }
+
+    .dossier-block h4 {
+      margin: 0 0 7px;
+      color: var(--agent);
+      font: 700 .54rem "Space Mono", monospace;
+      letter-spacing: .1em;
+    }
+
+    .dossier-block p {
+      margin: 0;
+      color: #9eabbd;
+      font-size: .79rem;
+    }
+
+    .dossier-ability {
+      grid-column: 1 / -1;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr .75fr;
+      gap: 18px;
+      border: 1px solid color-mix(in srgb, var(--agent) 15%, transparent);
+      background: color-mix(in srgb, var(--agent) 4%, transparent);
+    }
+
+    .dossier-ability h4 {
+      margin: 0 0 6px;
+      color: #e7edf8;
+      font-size: .8rem;
+    }
+
+    .dossier-ability strong { color: var(--agent); }
+    .dossier-ability p {
+      margin: 0;
+      color: #99a6b8;
+      font-size: .77rem;
+    }
+
+
+    .footer {
+      position: relative;
+      z-index: 5;
+      border-top: 1px solid rgba(138,180,248,.12);
+      padding: 36px 20px 45px;
+      color: #465367;
+      text-align: center;
+      font: .58rem "Space Mono", monospace;
+      letter-spacing: .1em;
+    }
+    .footer strong { color: #6f8098; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .75s ease, transform .75s cubic-bezier(.2,.7,.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    .tilt { transform-style: preserve-3d; will-change: transform; }
+
+    @media (max-width: 1020px) {
+      .nav-status { display: none; }
+      .hero-shell { grid-template-columns: 1fr; gap: 34px; }
+      .hero-panel { max-width: 680px; }
+      .section-head { grid-template-columns: 1fr; gap: 8px; }
+      .section-index { font-size: 3.1rem; }
+      .org-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .district-layout { grid-template-columns: 1fr; }
+      .city-map { min-height: 440px; }
+    }
+
+    @media (max-width: 760px) {
+      :root { --nav-h: 60px; }
+      body { word-break: keep-all; }
+      .nav-inner, .section, .hero-shell { width: min(100% - 28px, var(--max)); }
+      .brand { font-size: .72rem; }
+      .brand-mark { width: 24px; height: 24px; }
+      .nav-links a { padding: 8px 7px; font-size: .53rem; }
+      .nav-links a:nth-child(2),
+      .nav-links a:nth-child(3),
+      .nav-links a:nth-child(4) { display: none; }
+
+      .hero-shell { padding-top: 130px; padding-bottom: 72px; }
+      .hero h1 { font-size: clamp(3.1rem, 19vw, 5.2rem); }
+      .hero h1 .isolation { letter-spacing: .23em; }
+      .hero-summary { font-size: .9rem; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric { padding: 14px; }
+
+      .section { padding: 80px 0; }
+      .section-head { margin-bottom: 30px; }
+      .section-desc { font-size: .87rem; }
+      .grid-2, .grid-3, .org-grid { grid-template-columns: 1fr; }
+      .system-strip { grid-template-columns: 1fr 1fr; }
+      .sys:nth-child(2) { border-right: 0; }
+      .sys:nth-child(-n+2) { border-bottom: 1px solid rgba(138,180,248,.13); }
+
+      .city-map { min-height: 360px; }
+      .node { width: 68px; height: 68px; font-size: .52rem; }
+      .district-item { grid-template-columns: 78px 1fr; padding: 15px; gap: 10px; }
+
+      .org-card { min-height: 330px; }
+
+    }
+
+    @media (max-width: 430px) {
+      .nav-links a { display: none; }
+      .nav-links a:last-child { display: block; }
+      .hero-summary { line-height: 1.75; }
+      .hero-panel-head { font-size: .51rem; }
+      .metric b { font-size: .86rem; }
+      .system-strip { grid-template-columns: 1fr; }
+      .sys, .sys:nth-child(2) { border-right: 0; border-bottom: 1px solid rgba(138,180,248,.13); }
+      .sys:last-child { border-bottom: 0; }
+      .district-item { grid-template-columns: 1fr; }
+    }
+
+
+    @media (max-width: 1020px) {
+      .dossier-layout { grid-template-columns: .82fr 1.18fr; }
+      .dossier-photo { min-height: 600px; }
+      .dossier-facts { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .roster {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .roster-card {
+        aspect-ratio: 3 / 4.5;
+      }
+
+      .roster-card-top {
+        inset: 10px 10px auto;
+        font-size: .45rem;
+      }
+
+      .roster-card-risk { padding: 4px 5px; }
+      .roster-card-bottom { padding: 14px; }
+      .roster-card-name {
+      display: block; font-size: clamp(1.5rem, 9vw, 2.35rem); }
+      .roster-card-meta { font-size: .64rem; }
+      .roster-card-open {
+        margin-top: 11px;
+        padding-top: 9px;
+        font-size: .49rem;
+      }
+
+      .dossier-modal {
+        display: block;
+        padding: 0;
+      }
+
+      .dossier-panel {
+        width: 100%;
+        height: 100svh;
+        max-height: none;
+        border: 0;
+        transform: translateY(28px);
+      }
+
+      .dossier-layout {
+        display: block;
+        min-height: 0;
+      }
+
+      .dossier-photo {
+        min-height: 0;
+        height: min(78vw, 480px);
+      }
+
+      .dossier-photo::after {
+        background: linear-gradient(to top, rgba(5,8,13,.92), transparent 45%);
+      }
+
+      .dossier-body { padding: 25px 18px 30px; }
+      .dossier-name { font-size: clamp(2.7rem, 15vw, 4.8rem); }
+      .dossier-facts { grid-template-columns: repeat(2, 1fr); }
+      .dossier-columns,
+      .dossier-ability { grid-template-columns: 1fr; }
+      .dossier-ability { gap: 13px; }
+    }
+
+    @media (max-width: 430px) {
+      .roster { gap: 8px; }
+      .roster-card-bottom { padding: 11px; }
+      .roster-card-top { inset: 8px 8px auto; }
+      .roster-card-meta { font-size: .57rem; }
+      .roster-card-open { letter-spacing: .07em; }
+      .dossier-head { gap: 10px; }
+      .dossier-risk { padding: 6px 7px; font-size: .47rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      #rain { display: none; }
+      .reveal { opacity: 1; transform: none; }
+      .dossier-panel { transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot-box">
+      <div class="boot-brand">COVE // ARCHIVE</div>
+      <div class="boot-line"><i></i></div>
+      <div class="boot-copy">
+        ACCESSING RESTRICTED AREA DATABASE...<br>
+        AUTH_LEVEL: CIVILIAN_VIEW<br>
+        STATUS: UNSTABLE / CONNECTION ACCEPTED
+      </div>
+    </div>
+  </div>
+
+  <canvas id="rain" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="#home" aria-label="COVE 홈">
+        <i class="brand-mark" aria-hidden="true"></i>
+        <span>COVE // 0942</span>
+      </a>
+
+      <nav class="nav-links" aria-label="주요 메뉴">
+        <a href="#archive">ARCHIVE</a>
+        <a href="#systems">SYSTEM</a>
+        <a href="#districts">AREA</a>
+        <a href="#organizations">ORGS</a>
+        <a href="#roster">ROSTER</a>
+      </nav>
+
+      <div class="nav-status"><i></i> NETWORK ONLINE</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
+
+      <div class="hero-shell">
+        <div>
+          <div class="eyebrow">RESTRICTED AREA // STATUS: UNSTABLE // CODE_0942</div>
+          <h1 class="glitch" data-text="COVE">
+            <span>COVE</span>
+            <span class="isolation">THE ISOLATED</span>
+          </h1>
+          <p class="hero-summary">
+            국제 협약에 의해 지정된 이능력 감염자 격리 도시. 3~4km²의 작은 해안 도시 안에
+            항구, 행정, 의료, 폭력과 거래가 고밀도로 겹쳐 있다. 비는 잦고 공기는 습하며,
+            안개는 밤마다 골목을 삼킨다.
+          </p>
+          <div class="hero-quote">
+            이곳은 감옥이 아니다.<br>
+            떠날 수 없는 곳이 아니라, <strong>떠나지 않는 곳</strong>이다.
+          </div>
+        </div>
+
+        <aside class="hero-panel tilt" aria-label="COVE 상태 정보">
+          <div class="hero-panel-head">
+            <span>LIVE CITY METRICS</span>
+            <span>UNSTABLE</span>
+          </div>
+          <div class="metrics">
+            <div class="metric"><em>AREA</em><b>3–4 km²</b></div>
+            <div class="metric"><em>MARK OUTBREAK</em><b>YEAR 21</b></div>
+            <div class="metric"><em>INFECTION RATE</em><b class="accent">0.001%</b></div>
+            <div class="metric"><em>MANDATORY TERM</em><b class="accent">5 YEARS</b></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          PORT STATUS <span>◆</span> RAINFALL DETECTED <span>◆</span> TRACE DATABASE SYNCHRONIZED <span>◆</span>
+          CORE NETWORK ONLINE <span>◆</span> LOW DISTRICT ALERT LEVEL VARIABLE <span>◆</span>
+          PORT STATUS <span>◆</span> RAINFALL DETECTED <span>◆</span> TRACE DATABASE SYNCHRONIZED <span>◆</span>
+          CORE NETWORK ONLINE <span>◆</span> LOW DISTRICT ALERT LEVEL VARIABLE <span>◆</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="archive">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">ARCHIVE // WORLD DATA</div>
+          <div class="section-index">01</div>
+        </div>
+        <div>
+          <h2 class="section-title">QUARANTINE CITY<br>PROTOCOL</h2>
+          <p class="section-desc">
+            감염 즉시 능력이 발현되고, 감염자는 국제 협약에 따라 코브로 이송된다.
+            전염성은 사라져도 능력과 코스트는 남는다. 법적으로 떠날 수 있게 된 뒤에도,
+            대부분의 사람들은 이 도시에 머문다.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <article class="data-card reveal">
+          <span class="code">A-01 // MARK & TRACE</span>
+          <h3>마크와 흔적</h3>
+          <p>
+            이능력 바이러스의 공식 명칭은 <strong>Mark</strong>. 코브 내부에서는 <strong>흔적(Trace)</strong>이라고 부른다.
+            최초 발생은 21년 전, 감염률은 약 0.001%. 감염 즉시 능력이 발현되며 감염자는 강제 이송된다.
+            감염성은 <strong>5년간 유지</strong>되지만 이후에도 능력은 평생 남는다. 치료제는 없다.
+            코브에는 비능력자가 존재하지 않으며, 능력이 없는 자는 출입할 수 없다.
+          </p>
+        </article>
+
+        <article class="data-card reveal">
+          <span class="code">A-02 // QUARANTINE TERM</span>
+          <h3>5년 격리 규정</h3>
+          <p>
+            감염자는 <strong>5년간 의무 격리</strong>를 거쳐야 하며 그 이후에는 법적으로 출국 가능하다.
+            그러나 코스트 누적, 조직 계약, 경제적 부채, 앵커 관계, 외부 사회의 차별 등으로 인해
+            실제 출국 비율은 낮다.
+          </p>
+        </article>
+
+        <article class="data-card reveal">
+          <span class="code">A-03 // SECOND GENERATION</span>
+          <h3>2세대 능력자</h3>
+          <p>
+            코브에서 태어난 아이들은 선천적으로 능력을 보유한다. 현재 <strong>2세대 최고 연령은 20세</strong>.
+            능력 출력이 더 강한 경향이 있으며 폭주 시 피해 규모도 크다. 20세 이전에는 출국할 수 없고,
+            성인이 된 뒤에도 떠나는 경우는 드물다. 코브는 이들에게 격리 구역이 아니라 <strong>고향</strong>이다.
+          </p>
+        </article>
+
+        <article class="data-card reveal">
+          <span class="code">A-04 // COST</span>
+          <h3>코스트</h3>
+          <p>
+            능력 사용에는 반드시 <strong>비용(Cost)</strong>이 발생한다. 환청, 편두통, 체온 저하,
+            기억 손실, 감정 결손 등 형태는 개인마다 다르다. 능력을 사용하지 않아도 내부에 축적되어
+            신체 부하가 발생하기 때문에 결국 방출이 필요하다. 사용해도 문제고, 사용하지 않아도 문제다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="systems">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">SYSTEM // FAILURE RESPONSE</div>
+          <div class="section-index">02</div>
+        </div>
+        <div>
+          <h2 class="section-title">RAMPAGE<br>CONTROL</h2>
+          <p class="section-desc">
+            폭주는 능력의 출력 제한이 붕괴한 상태로, 국지적 재난을 유발한다.
+            코브는 물리적 제압과 감정 기반 고정이라는 두 개의 회복 체계를 운용한다.
+          </p>
+        </div>
+      </div>
+
+      <div class="system-strip reveal">
+        <article class="sys">
+          <div class="num">01</div>
+          <h3>제압 / Suppression</h3>
+          <p>센터가 주도하는 물리적 강제 리셋. 신체적 충격을 통해 능력을 강제로 정지시킨다.</p>
+        </article>
+        <article class="sys">
+          <div class="num">02</div>
+          <h3>고정 / Fixation</h3>
+          <p>감정 기반 안정화 방식. 대표적으로 신체 접촉을 통해 폭주 상태를 고정하고 완화한다.</p>
+        </article>
+        <article class="sys">
+          <div class="num">03</div>
+          <h3>앵커 / Anchor</h3>
+          <p>고정을 수행하는 상대. 공식 앵커는 오피스를 통해 등록되며 높은 고정 효율을 보인다.</p>
+        </article>
+        <article class="sys">
+          <div class="num">S–C</div>
+          <h3>위험 등급 / Risk Class</h3>
+          <p>S / A / B / C. 폭주 시 예상 피해 규모와 통제 난이도를 기준으로 산정한다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="districts">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">AREA // URBAN LAYERS</div>
+          <div class="section-index">03</div>
+        </div>
+        <div>
+          <h2 class="section-title">FIVE<br>DISTRICTS</h2>
+          <p class="section-desc">
+            작은 면적 안에 서로 다른 기능과 위험도가 층처럼 겹친다. 항구에서 시작된 도시의 동선은
+            주거 밀집지, 행정 중심, 슬럼, 지하 시설로 이어진다.
+          </p>
+        </div>
+      </div>
+
+      <div class="district-layout">
+        <div class="city-map reveal" aria-label="COVE 구역 개념도">
+          <span class="node" style="--x:24%;--y:26%">PORT</span>
+          <span class="node" style="--x:59%;--y:24%">CORE</span>
+          <span class="node" style="--x:43%;--y:50%">HIVE</span>
+          <span class="node" style="--x:72%;--y:66%">LOW</span>
+          <span class="node" style="--x:31%;--y:75%">UNDER</span>
+        </div>
+
+        <div class="district-list">
+          <article class="district-item reveal">
+            <b>PORT</b><p>항구 및 외부 연결 지대. 국제 선박과 감시 시설이 위치한다.</p>
+          </article>
+          <article class="district-item reveal">
+            <b>HIVE</b><p>고밀도 주거 구역. 코브 인구 대부분이 거주한다.</p>
+          </article>
+          <article class="district-item reveal">
+            <b>CORE</b><p>행정 중심 구역. 오피스 본부가 위치한다.</p>
+          </article>
+          <article class="district-item reveal">
+            <b>LOW</b><p>가장 위험한 슬럼 구역. 센터의 영향력이 강하며 충돌과 폭주가 잦다.</p>
+          </article>
+          <article class="district-item reveal">
+            <b>UNDER</b><p>지하 구역. 클리닉 본 시설과 연구 구역이 위치한다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="organizations">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">ORGANIZATIONS // POWER STRUCTURE</div>
+          <div class="section-index">04</div>
+        </div>
+        <div>
+          <h2 class="section-title">WHO OWNS<br>THE CITY?</h2>
+          <p class="section-desc">
+            행정, 집행, 의료, 정보, 비밀 활동은 각자의 방식으로 도시를 점유한다.
+            그리고 그 어디에도 속하지 않는 독립 청부업자들이 틈을 메운다.
+          </p>
+        </div>
+      </div>
+
+      <div class="org-grid">
+        <article class="org-card reveal tilt">
+          <img class="org-image" src="https://i.imgur.com/lyo6sT6.png" alt="OFFICE 조직 이미지" loading="lazy">
+          <div class="org-shade"></div><span class="org-no">01</span>
+          <div class="org-content">
+            <span class="org-type">ADMINISTRATION / CORE</span>
+            <h3>OFFICE <small>오피스</small></h3>
+            <p>코브의 실질 통치 집단. 격리 관리, 출국 승인, 위험 등급 산정, 대외 협상을 담당하며 자금과 계약 권한을 보유한다.</p>
+            <span class="org-rank">DIRECTOR → COUNSELOR → OFFICER → STAFF</span>
+          </div>
+        </article>
+
+        <article class="org-card reveal tilt">
+          <img class="org-image" src="https://i.imgur.com/GwceBE2.png" alt="CENTER 조직 이미지" loading="lazy">
+          <div class="org-shade"></div><span class="org-no">02</span>
+          <div class="org-content">
+            <span class="org-type">ENFORCEMENT / LOW</span>
+            <h3>CENTER <small>센터</small></h3>
+            <p>채권 회수, 강제 집행, 폭주 제압을 담당하는 실행 조직. 로우 구역에서 강한 영향력을 가지며 현장 중심 문화가 강하다.</p>
+            <span class="org-rank">HEAD → CAPTAIN → OPERATOR → TRAINEE</span>
+          </div>
+        </article>
+
+        <article class="org-card reveal tilt">
+          <img class="org-image" src="https://i.imgur.com/68MGHyx.png" alt="CLINIC 조직 이미지" loading="lazy">
+          <div class="org-shade"></div><span class="org-no">03</span>
+          <div class="org-content">
+            <span class="org-type">MEDICAL / UNDER</span>
+            <h3>CLINIC <small>클리닉</small></h3>
+            <p>코스트 완화 기술과 완화제 약물을 독점한 의료 조직. 폭주 후 치료, 억제 장치 개발, 마크 안정화 연구를 수행한다.</p>
+            <span class="org-rank">CHIEF → DOCTOR → ASSIST</span>
+          </div>
+        </article>
+
+        <article class="org-card reveal tilt">
+          <img class="org-image" src="https://i.imgur.com/TPofamz.png" alt="GARDEN 조직 이미지" loading="lazy">
+          <div class="org-shade"></div><span class="org-no">04</span>
+          <div class="org-content">
+            <span class="org-type">MEMORIAL / INTELLIGENCE / PORT</span>
+            <h3>GARDEN <small>가든</small></h3>
+            <p>추모 꽃을 판매하는 중립 정보 거래소. ‘오늘의 꽃’ 구매는 정보 거래 의사의 신호다. 장례식 대신 고인의 꽃을 하루 지닌 뒤 태우는 문화를 주관한다.</p>
+            <span class="org-rank">KEEPER / TENDER</span>
+          </div>
+        </article>
+
+        <article class="org-card rain-card reveal tilt">
+          <div class="rain-r" aria-hidden="true">R</div>
+          <div class="org-shade"></div><span class="org-no">05</span>
+          <div class="org-content">
+            <span class="org-type">UNKNOWN / CLASSIFIED</span>
+            <h3>RAIN <small>레인</small></h3>
+            <p>약 9개월 전부터 모습을 드러낸 신생 비밀 결사. 도시 곳곳에 의미심장한 낙서와 R이 새겨진 물건을 남긴다. 실체와 목적은 알려지지 않았다.</p>
+            <span class="org-rank">LEADER: R / MEMBERS: UNKNOWN</span>
+          </div>
+        </article>
+
+        <article class="org-card reveal tilt">
+          <img class="org-image" src="https://i.imgur.com/Qo2PiVM.jpeg" alt="SWEEPER 이미지" loading="lazy">
+          <div class="org-shade"></div><span class="org-no">EX</span>
+          <div class="org-content">
+            <span class="org-type">INDEPENDENT / FREELANCE</span>
+            <h3>SWEEPER <small>스위퍼</small></h3>
+            <p>코브에서 활동하는 독립 살인 청부업자들을 일컫는 말. 공식적으로는 무소속이며, 타 조직들조차 마찰과 개입을 되도록 피한다.</p>
+            <span class="org-rank">AFFILIATION: NONE</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="roster">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">ROSTER // ACTIVE PERSONNEL</div>
+          <div class="section-index">05</div>
+        </div>
+        <div>
+          <h2 class="section-title">CHARACTER<br>FILES</h2>
+          <p class="section-desc">
+            현재 열람 가능한 인물 기록 2건. 인물 카드를 선택하면 상세 파일이 열린다.
+          </p>
+        </div>
+      </div>
+
+      <div class="roster">
+        <button
+          class="roster-card sign reveal"
+          type="button"
+          data-dossier="sign"
+          aria-haspopup="dialog"
+          aria-controls="dossier-sign"
+        >
+          <img class="roster-card-image" src="https://i.imgur.com/rPztiZw.png" alt="" loading="lazy">
+          <span class="roster-card-shade" aria-hidden="true"></span>
+
+          <span class="roster-card-top">
+            <span>OFFICE // ACTIVE</span>
+            <span class="roster-card-risk">CLASS A</span>
+          </span>
+
+          <span class="roster-card-bottom">
+            <span class="roster-card-number">FILE // 001</span>
+            <span class="roster-card-name">SIGN</span>
+            <span class="roster-card-meta">독일 · 27세 · 오피스 오피서</span>
+            <span class="roster-card-open">VIEW FILE <i>→</i></span>
+          </span>
+        </button>
+
+        <button
+          class="roster-card haze reveal"
+          type="button"
+          data-dossier="haze"
+          aria-haspopup="dialog"
+          aria-controls="dossier-haze"
+        >
+          <img class="roster-card-image" src="https://i.imgur.com/mw3aZK6.png" alt="" loading="lazy">
+          <span class="roster-card-shade" aria-hidden="true"></span>
+
+          <span class="roster-card-top">
+            <span>CENTER // ACTIVE</span>
+            <span class="roster-card-risk">CLASS A</span>
+          </span>
+
+          <span class="roster-card-bottom">
+            <span class="roster-card-number">FILE // 002</span>
+            <span class="roster-card-name">HAZE</span>
+            <span class="roster-card-meta">러시아 · 28세 · 센터 상급 오퍼레이터</span>
+            <span class="roster-card-open">VIEW FILE <i>→</i></span>
+          </span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- SIGN DOSSIER -->
+  <div
+    class="dossier-modal sign"
+    id="dossier-sign"
+    data-modal="sign"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dossier-sign-title"
+    aria-hidden="true"
+  >
+    <button class="dossier-backdrop" type="button" data-close-modal aria-label="SIGN 프로필 닫기"></button>
+
+    <article class="dossier-panel" tabindex="-1">
+      <div class="dossier-bar">
+        <span class="dossier-bar-label">COVE ARCHIVE // PERSONNEL FILE 001 // DECRYPTED</span>
+        <button class="dossier-close" type="button" data-close-modal aria-label="닫기">×</button>
+      </div>
+
+      <div class="dossier-layout">
+        <div class="dossier-photo">
+          <img src="https://i.imgur.com/rPztiZw.png" alt="SIGN 캐릭터 이미지">
+          <span class="dossier-photo-stamp">OFFICE // OFFICER_CLASS_A</span>
+        </div>
+
+        <div class="dossier-body">
+          <div class="dossier-head">
+            <div>
+              <span class="dossier-code">CHARACTER FILE // 001</span>
+              <h3 class="dossier-name" id="dossier-sign-title">SIGN</h3>
+            </div>
+            <span class="dossier-risk">RISK CLASS: A</span>
+          </div>
+
+          <div class="dossier-quote">“비켜. 다음 공무 수행하러 가야 해.”</div>
+
+          <div class="dossier-facts">
+            <div class="dossier-fact"><span>NATIONALITY</span><b>독일 / 1세대</b></div>
+            <div class="dossier-fact"><span>AFFILIATION</span><b>오피스 / 오피서</b></div>
+            <div class="dossier-fact"><span>AGE / SEX</span><b>27 / 남성</b></div>
+            <div class="dossier-fact"><span>HEIGHT</span><b>183cm</b></div>
+            <div class="dossier-fact"><span>SYMBOL</span><b>수레국화</b></div>
+          </div>
+
+          <div class="dossier-columns">
+            <div class="dossier-block">
+              <h4>APPEARANCE</h4>
+              <p>회색빛이 도는 흑발과 선명한 푸른 눈. 수려한 인상이지만 늘 피로에 찌들어 있고 표정 변화가 적다.</p>
+            </div>
+
+            <div class="dossier-block">
+              <h4>PERSONALITY</h4>
+              <p>냉소적·통제 지향·감정 절제형. 폭주 가능성에 민감하며 사람을 등급과 확률로 판단한다. 건조하고 퉁명스럽지만 행동은 책임 중심적이다.</p>
+            </div>
+
+            <div class="dossier-ability">
+              <div>
+                <h4>ABILITY // <strong>STAMP</strong></h4>
+                <p>대상에게 ‘확정’을 찍어 상태·행동·출력을 제한하거나 고정한다. 이동 불가, 출력 제한, 발화 차단 등 명확한 조건을 지정해 적용할 수 있다.</p>
+              </div>
+              <div>
+                <h4>COST // <strong>MEMORY LOSS</strong></h4>
+                <p>기억 소실. 특히 감정이 얽힌 기억부터 흐려진다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- HAZE DOSSIER -->
+  <div
+    class="dossier-modal haze"
+    id="dossier-haze"
+    data-modal="haze"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dossier-haze-title"
+    aria-hidden="true"
+  >
+    <button class="dossier-backdrop" type="button" data-close-modal aria-label="HAZE 프로필 닫기"></button>
+
+    <article class="dossier-panel" tabindex="-1">
+      <div class="dossier-bar">
+        <span class="dossier-bar-label">COVE ARCHIVE // PERSONNEL FILE 002 // DECRYPTED</span>
+        <button class="dossier-close" type="button" data-close-modal aria-label="닫기">×</button>
+      </div>
+
+      <div class="dossier-layout">
+        <div class="dossier-photo">
+          <img src="https://i.imgur.com/mw3aZK6.png" alt="HAZE 캐릭터 이미지">
+          <span class="dossier-photo-stamp">CENTER // SENIOR_OPERATOR_CLASS_A</span>
+        </div>
+
+        <div class="dossier-body">
+          <div class="dossier-head">
+            <div>
+              <span class="dossier-code">CHARACTER FILE // 002</span>
+              <h3 class="dossier-name" id="dossier-haze-title">HAZE</h3>
+            </div>
+            <span class="dossier-risk">RISK CLASS: A</span>
+          </div>
+
+          <div class="dossier-quote">“좋아 보이네, 자기.”</div>
+
+          <div class="dossier-facts">
+            <div class="dossier-fact"><span>NATIONALITY</span><b>러시아 / 1세대</b></div>
+            <div class="dossier-fact"><span>AFFILIATION</span><b>센터 / 상급 오퍼레이터</b></div>
+            <div class="dossier-fact"><span>AGE / SEX</span><b>28 / 남성</b></div>
+            <div class="dossier-fact"><span>HEIGHT</span><b>186cm</b></div>
+            <div class="dossier-fact"><span>SYMBOL</span><b>헬레보어</b></div>
+          </div>
+
+          <div class="dossier-columns">
+            <div class="dossier-block">
+              <h4>APPEARANCE</h4>
+              <p>백금빛 금발과 라벤더색 눈. 빛을 받으면 옅은 분홍빛이 감돈다. 고급 정장과 작은 다이아 스터드를 즐겨 착용한다.</p>
+            </div>
+
+            <div class="dossier-block">
+              <h4>PERSONALITY</h4>
+              <p>관능적이며 계산적인 통제 지향 성향. 감정을 가볍게 취급하는 듯 보이지만 자신의 감정은 완전히 다루지 못한다. 말은 유려하고 부드럽다.</p>
+            </div>
+
+            <div class="dossier-ability">
+              <div>
+                <h4>ABILITY // <strong>TETHER</strong></h4>
+                <p>강제적 신체 접촉을 통해 감정 교류가 없는 상대에게도 폭주 출력을 안정·고정한다.</p>
+              </div>
+              <div>
+                <h4>COST // <strong>EMOTION ACCUMULATION</strong></h4>
+                <p>고정 대상의 감정이 내부로 유입되어 축적된다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+
+  <footer class="footer">
+    <strong>COVE ARCHIVE // CIVILIAN ACCESS NODE 0942</strong><br>
+    LOG_END // NO_RECORDS_LEFT // DATA_ENCRYPTED
+  </footer>
+
+  <script>
+    (() => {
+      const boot = document.getElementById("boot");
+      window.addEventListener("load", () => {
+        window.setTimeout(() => boot.classList.add("done"), 900);
+      });
+
+      const revealItems = document.querySelectorAll(".reveal");
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+      revealItems.forEach(el => revealObserver.observe(el));
+
+      const sections = [...document.querySelectorAll("main section[id]")];
+      const links = [...document.querySelectorAll(".nav-links a")];
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`));
+        });
+      }, { threshold: 0.35 });
+      sections.forEach(section => sectionObserver.observe(section));
+
+
+      // Character dossier pop-ups
+      const dossierCards = document.querySelectorAll("[data-dossier]");
+      const dossierModals = document.querySelectorAll(".dossier-modal");
+      let activeModal = null;
+      let lastTrigger = null;
+
+      const openDossier = (name, trigger) => {
+        const modal = document.querySelector(`[data-modal="${name}"]`);
+        if (!modal) return;
+
+        activeModal = modal;
+        lastTrigger = trigger || null;
+        document.body.classList.add("modal-open");
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+
+        const panel = modal.querySelector(".dossier-panel");
+        window.setTimeout(() => panel?.focus(), 30);
+      };
+
+      const closeDossier = () => {
+        if (!activeModal) return;
+
+        const closing = activeModal;
+        closing.classList.remove("open");
+        closing.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+        activeModal = null;
+
+        if (lastTrigger) {
+          window.setTimeout(() => lastTrigger.focus(), 20);
+        }
+      };
+
+      dossierCards.forEach(card => {
+        card.addEventListener("click", () => openDossier(card.dataset.dossier, card));
+      });
+
+      dossierModals.forEach(modal => {
+        modal.querySelectorAll("[data-close-modal]").forEach(close => {
+          close.addEventListener("click", closeDossier);
+        });
+      });
+
+      document.addEventListener("keydown", e => {
+        if (!activeModal) return;
+
+        if (e.key === "Escape") {
+          closeDossier();
+          return;
+        }
+
+        if (e.key === "Tab") {
+          const focusable = [...activeModal.querySelectorAll(
+            'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+          )].filter(el => el.offsetParent !== null);
+
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+            const canTilt = window.matchMedia("(hover:hover) and (pointer:fine)").matches &&
+                      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (canTilt) {
+        document.querySelectorAll(".tilt").forEach(card => {
+          card.addEventListener("mousemove", e => {
+            const r = card.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - .5;
+            const y = (e.clientY - r.top) / r.height - .5;
+            card.style.transform = `perspective(900px) rotateY(${x * 3.5}deg) rotateX(${-y * 3.5}deg) translateZ(0)`;
+          });
+          card.addEventListener("mouseleave", () => {
+            card.style.transform = "";
+          });
+        });
+      }
+
+      const canvas = document.getElementById("rain");
+      const ctx = canvas.getContext("2d");
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce) {
+        let drops = [];
+        let dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+
+        const resize = () => {
+          canvas.width = innerWidth * dpr;
+          canvas.height = innerHeight * dpr;
+          canvas.style.width = innerWidth + "px";
+          canvas.style.height = innerHeight + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          const count = Math.min(90, Math.floor(innerWidth / 15));
+          drops = Array.from({ length: count }, () => ({
+            x: Math.random() * innerWidth,
+            y: Math.random() * innerHeight,
+            len: 8 + Math.random() * 18,
+            speed: 4 + Math.random() * 7,
+            drift: .55 + Math.random() * .55,
+            alpha: .08 + Math.random() * .18
+          }));
+        };
+
+        const draw = () => {
+          ctx.clearRect(0, 0, innerWidth, innerHeight);
+          for (const d of drops) {
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y);
+            ctx.lineTo(d.x - d.drift * d.len, d.y + d.len);
+            ctx.strokeStyle = `rgba(164, 199, 255, ${d.alpha})`;
+            ctx.lineWidth = .7;
+            ctx.stroke();
+            d.y += d.speed;
+            d.x -= d.drift;
+            if (d.y > innerHeight + 30 || d.x < -30) {
+              d.y = -30;
+              d.x = Math.random() * (innerWidth + 80);
+            }
+          }
+          requestAnimationFrame(draw);
+        };
+
+        resize();
+        addEventListener("resize", resize, { passive: true });
+        draw();
+      }
+    })();
+  </script>
+</body>
+</html>
